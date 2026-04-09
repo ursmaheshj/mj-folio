@@ -36,10 +36,12 @@ A clean, professional static portfolio site with a modern design. No build tools
 
 ## 🚀 Quick Start
 
-### 0. Star repo: 
-```
+### 0. Inital step: 
 
-```
+Give a ⭐ [star](https://github.com/login?return_to=%2Fursmaheshj%2Fmj-folio)
+
+Fork this repo [fork](https://github.com/login?return_to=%2Fursmaheshj%2Fmj-folio)
+
 ### 1. Clone or Download
 
 ```bash
@@ -121,11 +123,6 @@ portfolio/
 ├── cv.html                 # Full CV/resume with all sections
 ├── contact.html            # Contact information
 ├── README.md               # This file
-├── INTERACTIVE_FEATURES.md # Interactive features guide
-├── PERFORMANCE_OPTIMIZATION.md # JavaScript performance details
-├── IMAGE_OPTIMIZATION.md   # Image workflow guide
-├── PERFORMANCE_WORKFLOWS.md # Complete workflows guide
-├── WORKFLOWS_QUICK_REF.md  # Quick reference for all workflows
 ├── lighthouserc.json       # Lighthouse performance config
 ├── .gitignore              # Git ignore rules
 ├── .github/                # 🤖 GitHub Actions workflow
@@ -149,7 +146,7 @@ portfolio/
 └── images/                 # 📁 Your images
     ├── profile.jpg         # Your photo (auto-resized to 400x400px)
     ├── projects/           # Project screenshots (auto-optimized)
-    └── README.md           # Image guidelines
+    └── IMAGES_README.md           # Image guidelines
 ```
 
 ### File Organization
@@ -214,7 +211,7 @@ Interactive features are opt-in. To change defaults, edit `js/content.js`:
 }
 ```
 
-> **Performance:** Features use idle callbacks and lazy loading. Zero impact when disabled (default). See [PERFORMANCE_OPTIMIZATION.md](PERFORMANCE_OPTIMIZATION.md) for details.
+> **Performance:** Features use idle callbacks and lazy loading. Zero impact when disabled (default).
 
 ### Changing Colors
 
