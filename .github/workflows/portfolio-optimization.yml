@@ -1,8 +1,5 @@
 name: 🚀 Portfolio Optimization Suite
 
-# Single unified workflow for all performance optimizations
-# Replaces: optimize-images.yml, minify-assets.yml, compress-assets.yml, lighthouse.yml, link-check.yml
-
 on:
   push:
     branches: [main, master]
@@ -592,4 +589,3 @@ jobs:
           echo "**Total Impact:** ~70% smaller pages, ~65% faster load times" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "---" >> $GITHUB_STEP_SUMMARY
-          echo "*View full documentation: [PERFORMANCE_WORKFLOWS.md](../PERFORMANCE_WORKFLOWS.md)*" >> $GITHUB_STEP_SUMMARY
