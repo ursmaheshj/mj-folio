@@ -39,7 +39,7 @@ window.PORTFOLIO_DATA = {
     
     // Profile photo: Add your image to images/ folder, then update path below
     // Recommended size: 400x400px square
-    "photoUrl": "images/profile.jpg",
+    "photoUrl": "images/profile1.jpg",
     
     "address": [
       "15 Yemen Road, Yemen",

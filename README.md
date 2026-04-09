@@ -689,7 +689,7 @@ Found a bug or want to suggest an improvement? Feel free to:
 - Copilot
 - unsplash
 - Github
-
+ 
 Design inspired by [al-folio](https://github.com/alshedivat/al-folio) Jekyll theme.
 
 Built with ❤️ in india.

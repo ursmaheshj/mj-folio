@@ -119,3 +119,4 @@ function initPage(title) {
   if (title) document.title = `${data.profile.name} | ${title}`;
 }
 
+

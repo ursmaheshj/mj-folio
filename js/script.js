@@ -71,3 +71,4 @@ renderProfile();
 renderBio();
 renderLatestPostsPreview();
 setupReveal();
+
