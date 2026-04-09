@@ -5,7 +5,7 @@ name: 🚀 Portfolio Optimization Suite
 
 on:
   push:
-    branches: [main]
+    branches: [main, master]
     paths:
       - '**.html'
       - '**.css'
