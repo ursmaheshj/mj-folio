@@ -118,5 +118,3 @@ function initPage(title) {
   setFooter();
   if (title) document.title = `${data.profile.name} | ${title}`;
 }
-
-

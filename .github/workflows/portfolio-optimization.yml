@@ -16,7 +16,7 @@ on:
       - '!**.min.css'
   
   pull_request:
-    branches: [main]
+    branches: [main, master]
   
   workflow_dispatch:  # Manual trigger (run whenever you want)
 
@@ -36,7 +36,7 @@ jobs:
       # ============================================
       
       - name: 📥 Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0  # Full history for proper change detection
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -133,7 +133,7 @@ jobs:
       
       - name: 🟢 Setup Node.js
         if: steps.changes.outputs.assets == 'true' || steps.changes.outputs.static == 'true' || github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: '20'
       
@@ -421,7 +421,7 @@ jobs:
       
       - name: 📋 Create issue for broken links (manual trigger only)
         if: (github.event_name == 'workflow_dispatch') && (env.broken_urls != '0' || env.missing_images != '0')
-        uses: actions/github-script@v6
+        uses: actions/github-script@v7
         with:
           script: |
             const fs = require('fs');
@@ -495,7 +495,7 @@ jobs:
       
       - name: 📊 Upload Lighthouse results
         if: github.event_name == 'pull_request'
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: lighthouse-results
           path: .lighthouseci
