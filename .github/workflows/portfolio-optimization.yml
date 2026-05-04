@@ -1,21 +1,29 @@
 name: 🚀 Portfolio Optimization Suite
 
+# Single unified workflow for all performance optimizations
 on:
-  push:
-    branches: [main, master]
-    paths:
-      - '**.html'
-      - '**.css'
-      - '**.js'
-      - '**.md'
-      - 'images/**'
-      - '!**.min.js'
-      - '!**.min.css'
-  
-  pull_request:
-    branches: [main, master]
-  
-  workflow_dispatch:  # Manual trigger (run whenever you want)
+  workflow_dispatch:
+    inputs:
+      optimize_images:
+        description: 'Optimize images'
+        required: true
+        default: false
+        type: boolean
+      minify_assets:
+        description: 'Minify CSS and JavaScript'
+        required: true
+        default: false
+        type: boolean
+      compress_files:
+        description: 'Compress files (Gzip + Brotli)'
+        required: true
+        default: false
+        type: boolean
+      check_links:
+        description: 'Check external links and image paths'
+        required: true
+        default: false
+        type: boolean
 
 jobs:
   optimize:
@@ -38,62 +46,23 @@ jobs:
           fetch-depth: 0  # Full history for proper change detection
           token: ${{ secrets.GITHUB_TOKEN }}
       
-      - name: 🔍 Detect file changes
+      - name: 🔍 Set optimization flags from inputs
         id: changes
         run: |
-          # Detect what files changed to run only necessary steps
-          echo "Detecting changed files..."
+          echo "Setting optimization flags based on workflow inputs..."
+          echo ""
           
-          # For manual runs, process everything
-          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
-            echo "images=true" >> $GITHUB_OUTPUT
-            echo "assets=true" >> $GITHUB_OUTPUT
-            echo "static=true" >> $GITHUB_OUTPUT
-            echo "content=true" >> $GITHUB_OUTPUT
-            exit 0
-          fi
+          # Set flags based on user inputs
+          echo "images=${{ github.event.inputs.optimize_images }}" >> $GITHUB_OUTPUT
+          echo "assets=${{ github.event.inputs.minify_assets }}" >> $GITHUB_OUTPUT
+          echo "static=${{ github.event.inputs.compress_files }}" >> $GITHUB_OUTPUT
+          echo "content=${{ github.event.inputs.check_links }}" >> $GITHUB_OUTPUT
           
-          # Get changed files
-          if [ "${{ github.event_name }}" == "pull_request" ]; then
-            CHANGED_FILES=$(git diff --name-only ${{ github.event.pull_request.base.sha }} ${{ github.sha }})
-          else
-            CHANGED_FILES=$(git diff --name-only HEAD~1 HEAD)
-          fi
-          
-          echo "Changed files:"
-          echo "$CHANGED_FILES"
-          
-          # Check for image changes
-          if echo "$CHANGED_FILES" | grep -qE '^images/.*\.(jpg|jpeg|png|gif|webp)$'; then
-            echo "images=true" >> $GITHUB_OUTPUT
-            echo "✅ Image files changed"
-          else
-            echo "images=false" >> $GITHUB_OUTPUT
-          fi
-          
-          # Check for CSS/JS changes
-          if echo "$CHANGED_FILES" | grep -qE '\.(css|js)$' | grep -vE '\.min\.(css|js)$'; then
-            echo "assets=true" >> $GITHUB_OUTPUT
-            echo "✅ CSS/JS files changed"
-          else
-            echo "assets=false" >> $GITHUB_OUTPUT
-          fi
-          
-          # Check for static files (for compression)
-          if echo "$CHANGED_FILES" | grep -qE '\.(html|css|js|json|svg)$'; then
-            echo "static=true" >> $GITHUB_OUTPUT
-            echo "✅ Static files changed"
-          else
-            echo "static=false" >> $GITHUB_OUTPUT
-          fi
-          
-          # Check for content changes (HTML, MD, content.js)
-          if echo "$CHANGED_FILES" | grep -qE '\.(html|md)$|js/content\.js$'; then
-            echo "content=true" >> $GITHUB_OUTPUT
-            echo "✅ Content files changed"
-          else
-            echo "content=false" >> $GITHUB_OUTPUT
-          fi
+          echo "✅ Optimization flags set:"
+          echo "  • Image optimization: ${{ github.event.inputs.optimize_images }}"
+          echo "  • Asset minification: ${{ github.event.inputs.minify_assets }}"
+          echo "  • File compression: ${{ github.event.inputs.compress_files }}"
+          echo "  • Link checking: ${{ github.event.inputs.check_links }}"
       
       # ============================================
       # STEP 2: Image Optimization
@@ -129,7 +98,7 @@ jobs:
       # ============================================
       
       - name: 🟢 Setup Node.js
-        if: steps.changes.outputs.assets == 'true' || steps.changes.outputs.static == 'true' || github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
+        if: steps.changes.outputs.assets == 'true' || steps.changes.outputs.static == 'true'
         uses: actions/setup-node@v4
         with:
           node-version: '20'
@@ -311,7 +280,7 @@ jobs:
       # ============================================
       
       - name: 🔗 Check external links in HTML/Markdown
-        if: steps.changes.outputs.content == 'true' || github.event_name == 'workflow_dispatch'
+        if: steps.changes.outputs.content == 'true'
         uses: gaurav-nelson/github-action-markdown-link-check@v1
         with:
           config-file: '.github/link-check-config.json'
@@ -320,7 +289,7 @@ jobs:
         continue-on-error: true
       
       - name: 🔗 Check URLs in content.js
-        if: steps.changes.outputs.content == 'true' || github.event_name == 'workflow_dispatch'
+        if: steps.changes.outputs.content == 'true'
         run: |
           echo "🔗 Checking URLs in js/content.js..."
           
@@ -373,7 +342,7 @@ jobs:
         continue-on-error: true
       
       - name: 🖼️ Check image paths
-        if: steps.changes.outputs.content == 'true' || github.event_name == 'workflow_dispatch'
+        if: steps.changes.outputs.content == 'true'
         run: |
           echo "🖼️ Checking image paths in js/content.js..."
           
@@ -416,8 +385,8 @@ jobs:
           fi
         continue-on-error: true
       
-      - name: 📋 Create issue for broken links (manual trigger only)
-        if: (github.event_name == 'workflow_dispatch') && (env.broken_urls != '0' || env.missing_images != '0')
+      - name: 📋 Create issue for broken links
+        if: env.broken_urls != '0' || env.missing_images != '0'
         uses: actions/github-script@v7
         with:
           script: |
@@ -462,12 +431,10 @@ jobs:
       # ============================================
       
       - name: 🚦 Install Lighthouse CI
-        if: github.event_name == 'push' || github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
         run: |
           npm install -g @lhci/cli@0.12.x
       
       - name: 🚦 Run Lighthouse CI
-        if: github.event_name == 'push' || github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
         run: |
           echo "🚦 Starting Lighthouse CI audit..."
           
@@ -491,7 +458,6 @@ jobs:
         continue-on-error: true
       
       - name: 📊 Upload Lighthouse results
-        if: github.event_name == 'pull_request'
         uses: actions/upload-artifact@v4
         with:
           name: lighthouse-results
